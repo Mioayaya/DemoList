@@ -1,5 +1,6 @@
 import { FC, memo, useRef, useState } from "react";
 import { DemoDiv } from "./DemoStyled";
+import { useCallbackRef } from "../Hooks/useCallbackRef";
 
 interface IPos {
   left: number;
@@ -7,10 +8,10 @@ interface IPos {
 }
 
 interface IDragData {
-  startTop: number;   // block的Top值
-  startLeft: number;  // ...
-  startX: number;     // 鼠标的left值
-  startY: number;     // ...
+  startTop: number; // block的Top值
+  startLeft: number; // ...
+  startX: number; // 鼠标的left值
+  startY: number; // ...
 }
 
 const Demo: FC = memo(() => {
@@ -25,31 +26,33 @@ const Demo: FC = memo(() => {
       startTop: 0,
       startLeft: 0,
       startX: 0,
-      startY: 0
+      startY: 0,
     });
 
-    const mousedown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const mousedown = useCallbackRef((e: React.MouseEvent<HTMLDivElement>) => {
       document.addEventListener("mousemove", mousemove);
       document.addEventListener("mouseup", mouseup);
       dragData.current = {
         startTop: pos.top,
         startLeft: pos.left,
         startX: e.clientX,
-        startY: e.clientY
-      }
-    };
+        startY: e.clientY,
+      };
+    });
 
     const mousemove = (e: MouseEvent) => {
-      const { startTop,startLeft,startX,startY} = dragData.current;
+      const { startTop, startLeft } = dragData.current;
       const deltaX = e.clientX - dragData.current.startX;
       const deltaY = e.clientY - dragData.current.startY;
       setPos({
         top: startTop + deltaY,
-        left: startLeft + deltaX
-      })
+        left: startLeft + deltaX,
+      });
     };
 
-    const mouseup = (e: MouseEvent) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const mouseup = (_e: MouseEvent) => {
       document.removeEventListener("mousemove", mousemove);
       document.removeEventListener("mouseup", mouseup);
     };
